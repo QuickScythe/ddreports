@@ -1,5 +1,9 @@
 package me.ddreports.data;
 
+import json2.JSONArray;
+import json2.JSONObject;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class Dash {
@@ -21,6 +25,26 @@ public class Dash {
         this.tips = calculateTips();
         this.pay = calculatePay();
         this.total_pay = tips + pay;
+    }
+
+    public Dash(JSONObject data){
+        this.start_time = data.getLong("start_time");
+        this.end_time = data.getLong("end_time");
+        this.miles = data.getDouble("miles");
+        this.active_time = data.getLong("active_time");
+        JSONArray offerData = data.getJSONArray("offers");
+        List<Offer> offers = new ArrayList<>();
+        for (int i = 0; i < offerData.length(); i++) {
+            offers.add(new Offer(offerData.getJSONObject(i)));
+        }
+        this.offers = offers;
+        this.tips = calculateTips();
+        this.pay = calculatePay();
+        this.total_pay = tips + pay;
+
+    }
+
+    private void setVariables() {
     }
 
     private double calculatePay() {
