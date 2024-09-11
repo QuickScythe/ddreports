@@ -1,0 +1,111 @@
+{
+  "start_time": 1724355180000,
+  "end_time": 1724367180000,
+  "miles": 50.6,
+  "active_time": 87,
+  "offers": [
+    {
+      "base_pay": 5.50,
+      "deliveries": [
+        {
+          "tip": 0.00,
+          "store": {
+            "name": "NAPA 800004006"
+          }
+        }
+      ]
+    },
+    {
+      "base_pay": 2.00,
+      "deliveries": [
+        {
+          "tip": 4.00,
+          "store": "KFC (G135015)"
+        },
+        {
+          "tip": 5.00,
+          "store": "CAVA (11895 West 95th Street)"
+        }
+      ]
+    },
+    {
+      "base_pay": 3.00,
+      "deliveries": [
+        {
+          "tip": 2.00,
+          "store": "On The Border Oak Park (116) - 66214"
+        },
+        {
+          "tip": 3.00,
+          "store": "Marco's Pizza (4039)"
+        }
+      ]
+    },
+    {
+      "base_pay": 4.00,
+      "deliveries": [
+        {
+          "tip": 1.00,
+          "store": "Chipotle (West 95th Street)"
+        },
+        {
+          "tip": 2.00,
+          "store": "Pizza Hut (38405) - DT"
+        }
+      ]
+    },
+    {
+      "base_pay": 2.00,
+      "deliveries": [
+        {
+          "tip": 7.00,
+          "store": "On the Boarder Oak Park (116) - 66214"
+        }
+      ]
+    },
+    {
+      "base_pay": 2.00,
+      "deliveries": [
+        {
+          "tip": 3.50,
+          "store": "Marco's Pizza (4039)"
+        },
+        {
+          "tip": 5.00,
+          "store": "Marco's Pizza (4039)"
+        }
+      ]
+    },
+    {
+      "base_pay": 2.00,
+      "deliveries": [
+        {
+          "tip": 3.00,
+          "store": "Chipotle (West 95th Street)"
+        }
+      ]
+    },
+    {
+      "base_pay": 2.00,
+      "deliveries": [
+        {
+          "tip": 3.79,
+          "store": "Pizza Hut (38405) - DT"
+        },
+        {
+          "tip": 4.00,
+          "store": "Jason's Deli (Overland Park)"
+        }
+      ]
+    },
+    {
+      "base_pay": 2.00,
+      "deliveries": [
+        {
+          "tip": 5.84,
+          "store": "Harris and Harris Enterprises, LLC (Quivira Road)"
+        }
+      ]
+    }
+  ]
+}

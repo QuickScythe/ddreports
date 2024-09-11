@@ -1,4 +1,7 @@
 plugins {
+    id 'org.springframework.boot' version "${spring_boot_version}"
+    id 'io.spring.dependency-management' version "${spring_depman_version}"
+    id 'com.vaadin' version "${vaadin_version}"
     id 'java'
 }
 
@@ -10,10 +13,20 @@ repositories {
 }
 
 dependencies {
+    implementation "com.vaadin:vaadin:${vaadin_version}"
     testImplementation platform('org.junit:junit-bom:5.10.0')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation "org.webjars:chartjs:${chartjs_version}"
+    implementation "net.sourceforge.tess4j:tess4j:${tess4j_version}"
 }
 
 test {
     useJUnitPlatform()
+}
+
+vaadin {
+    productionMode = false
 }
