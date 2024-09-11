@@ -1,22 +1,16 @@
-package me.ddreports.server;
+package me.ddreports.server.controller;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import json2.JSONObject;
 import me.ddreports.data.Dash;
+import me.ddreports.data.Store;
+import me.ddreports.storage.StorageManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.util.Random;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class DataController {
@@ -35,10 +29,10 @@ public class DataController {
     }
 
     @GetMapping("/data/login")
-    public String login(HttpSession session) {
+    public String login(@RequestParam(value = "from", required = false, defaultValue = "/") String from, HttpSession session) {
         session.setAttribute("user", "admin");
         // Example data, replace with your actual data source
-        return "redirect:/";
+        return "redirect:" + from;
     }
 
     @GetMapping("/data/logout")
@@ -47,8 +41,30 @@ public class DataController {
         return "redirect:/";
     }
 
+    @GetMapping("/data/new-store")
+    public String newStore(Model model, HttpSession session, HttpServletRequest request) {
+        if(session.getAttribute("user") == null){
+            return "redirect:/data/login?from=" + request.getRequestURI();
+        }
+        model.addAttribute("store", new Store());
+        return "new-store";
+    }
+
+    @PostMapping("/form/new-store")
+    public String newStorePost(@ModelAttribute Store store, Model model, HttpSession session) {
+        logger.info(new JSONObject(store).toString(2));
+        model.addAttribute("store", store);
+        StorageManager.saveStore(store);
+//        StorageManager.saveStore(store, session.getAttribute("user").toString());
+        return "redirect:/data/new-store";
+    }
+
     @GetMapping("/data/save-dash")
-    public String saveDash(Model model) {
+    public String saveDash(Model model, HttpSession session, HttpServletRequest request) {
+        if(session.getAttribute("user") == null){
+            return "redirect:/data/login?from=" + request.getRequestURI();
+        }
+        model.addAttribute("stores", StorageManager.getStores());
         model.addAttribute("form", new Dash());
         return "save-dash";
     }
@@ -58,24 +74,11 @@ public class DataController {
 //        logger.info("Received JSON: {}", form);
 //        logger.info(new JSONObject(form).toString(2));
         model.addAttribute("form", form);
-        File file = new File("dashes/" + session.getAttribute("user").toString() + "/dash" + new Random().nextInt() + ".json");
-        if(!file.getParentFile().exists())
-            file.getParentFile().mkdirs();
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            writer.write(new JSONObject(form).toString(2));
-            System.out.println("File written successfully.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        StorageManager.saveDash(form, session.getAttribute("user").toString());
         return "redirect:/data/save-dash";
     }
 
-    @GetMapping("/style.css")
-    public String style(Model model) {
-        model.addAttribute("backgroundColor", "#2b2b2b");
-        model.addAttribute("textColor", "#dddddd");
-        return "core.css";
-    }
+
 
     @GetMapping("/")
     public String index(Model model, HttpSession session) {

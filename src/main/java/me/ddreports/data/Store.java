@@ -1,8 +1,9 @@
 package me.ddreports.data;
 
-import json2.JSONObject;
-
 public class Store {
+    String name;
+    Zone zone;
+
     public String getName() {
         return name;
     }
@@ -18,8 +19,5 @@ public class Store {
     public void setZone(Zone zone) {
         this.zone = zone;
     }
-
-    String name;
-    Zone zone;
 
 }

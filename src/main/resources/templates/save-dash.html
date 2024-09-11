@@ -4,7 +4,42 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dynamic Form</title>
-    <script>
+    <script th:inline="javascript">
+
+        function autocompleteStore(offerNum, deliveryNum) {
+            /*<![CDATA[*/
+            const stores = /*[[${stores}]]*/ [];
+            var value = document.getElementById(`offer${offerNum}.deliveries${deliveryNum}.store`).value;
+            let result = document.getElementById(`store${offerNum}delivery${deliveryNum}result`);
+            result.innerHTML = "";
+            if (value.length > 0) {
+                let matches = stores.filter(item => item.name.toLowerCase().includes(value.toLowerCase()));
+                if(matches.length === 0){
+                    let div = document.createElement("div");
+                    div.innerHTML = "No matches found";
+                    div.innerHTML = `
+                    <label for"offers${offerNum}.deliveries${deliveryNum}.store.zone.city">Zone City:</label>
+                    <input type="text" id="offers${offerNum}.deliveries${deliveryNum}.store.zone.city" name="offers[${offerNum}].deliveries[${deliveryNum}].store.zone.city" /><br/>
+
+                    <label for"offers${offerNum}.deliveries${deliveryNum}.store.zone.state">Zone State:</label>
+                    <input type="text" id="offers${offerNum}.deliveries${deliveryNum}.store.zone.state" name="offers[${offerNum}].deliveries[${deliveryNum}].store.zone.state" /><br/>
+
+
+                    `;
+                    result.appendChild(div);
+                } else
+                matches.forEach(match => {
+                    let div = document.createElement("div");
+                    div.innerHTML = `<a href="#" onclick="finalizeAutocompleteStore(${offerNum},${deliveryNum},'${match.name}')" >` + match.name + `</a>`;
+                    result.appendChild(div);
+                });
+            }
+        }
+
+        function finalizeAutocompleteStore(offerNum, deliveryNum, value) {
+            document.getElementById(`offer${offerNum}.deliveries${deliveryNum}.store`).value = value;
+            document.getElementById(`store${offerNum}delivery${deliveryNum}result`).innerHTML = "";
+        }
 
         function updateDeliveriesSection(offerNum){
             const deliveries = document.getElementById(`offer${offerNum}deliveries`).value;
@@ -14,7 +49,9 @@
                 text += "<h5>Delivery " + (i + 1) + "</h5>";
                 text += `
                     <label for="offers${offerNum}.deliveries${i}.store">Store:</label>
-                    <input type="text" id="offer${offerNum}.deliveries${i}.store" name="offers[${offerNum}].deliveries[${i}].store" /><br/>
+                    <input type="text" id="offer${offerNum}.deliveries${i}.store" name="offers[${offerNum}].deliveries[${i}].store" onkeyup="autocompleteStore(${offerNum}, ${i})"/><br/>
+                    <div id="store${offerNum}delivery${i}result"></div>
+
 
                     <label for="offers${offerNum}.deliveries${i}.tips">Tips:</label>
                     <input type="number" id="offers${offerNum}.delivery${i}.tips" name="offers[${offerNum}].deliveries[${i}].tips" /><br/>
@@ -57,6 +94,9 @@
     <input type="datetime-local" id="end" th:field="*{endTime}" /><br/>
     <label for="active">Active Time (Minutes):</label>
     <input type="number" id="active" th:field="*{activeTime}" /><br/>
+
+    <label for="zone">Zone:</label>
+    <input type="number" id="zone" name="zone"/><br/>
 
     <label for="miles">Miles:</label>
     <input type="number" id="miles" th:field="*{miles}" /><br/>

@@ -1,20 +1,13 @@
 package me.ddreports;
 
-import com.vaadin.flow.component.page.AppShellConfigurator;
-import me.ddreports.utils.ImageUtils;
-import net.sourceforge.tess4j.Tesseract;
-import net.sourceforge.tess4j.TesseractException;
+import me.ddreports.storage.StorageManager;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 
 @SpringBootApplication
 
-public class Main implements AppShellConfigurator {
+public class Main  {
 
 
     public static void main(String[] args) {
@@ -52,6 +45,7 @@ public class Main implements AppShellConfigurator {
 //        } catch (TesseractException e) {
 //            e.printStackTrace();
 //        }
+        StorageManager.init();
         SpringApplication.run(Main.class, args);
     }
 

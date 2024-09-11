@@ -1,7 +1,6 @@
 package me.ddreports.server.converter;
 
 import me.ddreports.data.Offer;
-import me.ddreports.server.DataController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.converter.Converter;

@@ -6,6 +6,23 @@ body {
     color: /*[(${textColor})]*/ red;
 }
 
+a {
+    color: /*[(${linkColor})]*/ red;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+a:visited {
+    color: /*[(${visitedLinkColor})]*/ red;
+}
+
+a:visited:hover {
+    text-decoration: underline;
+}
+
 h1 {
     color: /*[(${textColor})]*/ red;
 }
