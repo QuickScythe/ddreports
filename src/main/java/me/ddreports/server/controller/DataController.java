@@ -5,7 +5,9 @@ import jakarta.servlet.http.HttpSession;
 import json2.JSONObject;
 import me.ddreports.data.Dash;
 import me.ddreports.data.Store;
+import me.ddreports.data.account.Account;
 import me.ddreports.storage.StorageManager;
+import me.ddreports.utils.Utils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -29,10 +31,22 @@ public class DataController {
     }
 
     @GetMapping("/data/login")
-    public String login(@RequestParam(value = "from", required = false, defaultValue = "/") String from, HttpSession session) {
-        session.setAttribute("user", "admin");
-        // Example data, replace with your actual data source
-        return "redirect:" + from;
+    public String login(@RequestParam(value = "from", required = false, defaultValue = "/") String from, HttpSession session, Model model) {
+        model.addAttribute("account", new Account());
+        return "login";
+    }
+
+    @PostMapping("/form/login")
+    public String loginPost(@ModelAttribute Account account, HttpSession session, HttpServletRequest request) {
+        if (StorageManager.getAccountManager().getAccount(account.getUsername()) != null) {
+            Account storedAccount = StorageManager.getAccountManager().getAccount(account.getUsername());
+            if(account.getPassword().equals(storedAccount.getPassword())) {
+                session.setAttribute("user", account.getUsername());
+                request.getParameter("from");
+                return "redirect:/";
+            } else return "redirect:/data/login?error=badPassword";
+        }
+        return "redirect:/data/login?error=true";
     }
 
     @GetMapping("/data/logout")
@@ -41,9 +55,26 @@ public class DataController {
         return "redirect:/";
     }
 
+    @GetMapping("/data/register")
+    public String register(HttpSession session, Model model) {
+        model.addAttribute("account", new Account());
+        return "register-account";
+    }
+
+    @PostMapping("/form/register")
+    public String registerPost(@ModelAttribute Account account, HttpSession session) {
+        if (StorageManager.getAccountManager().getAccount(account.getUsername()) == null) {
+            StorageManager.getAccountManager().addAccount(account);
+            session.setAttribute("user", account.getUsername());
+            return "redirect:/";
+        }
+        return "redirect:/data/register?error=accountExists";
+
+    }
+
     @GetMapping("/data/new-store")
     public String newStore(Model model, HttpSession session, HttpServletRequest request) {
-        if(session.getAttribute("user") == null){
+        if (session.getAttribute("user") == null) {
             return "redirect:/data/login?from=" + request.getRequestURI();
         }
         model.addAttribute("store", new Store());
@@ -61,7 +92,7 @@ public class DataController {
 
     @GetMapping("/data/save-dash")
     public String saveDash(Model model, HttpSession session, HttpServletRequest request) {
-        if(session.getAttribute("user") == null){
+        if (session.getAttribute("user") == null) {
             return "redirect:/data/login?from=" + request.getRequestURI();
         }
         model.addAttribute("stores", StorageManager.getStores());
@@ -74,10 +105,12 @@ public class DataController {
 //        logger.info("Received JSON: {}", form);
 //        logger.info(new JSONObject(form).toString(2));
         model.addAttribute("form", form);
-        StorageManager.saveDash(form, session.getAttribute("user").toString());
+        Account account = StorageManager.getAccountManager().getAccount(session.getAttribute("user").toString());
+        if (account != null) {
+            account.saveDash(form);
+        } else return "redirect:/error";
         return "redirect:/data/save-dash";
     }
-
 
 
     @GetMapping("/")

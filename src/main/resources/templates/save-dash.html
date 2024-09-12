@@ -5,15 +5,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dynamic Form</title>
     <script th:inline="javascript">
+        /*<![CDATA[*/
+        const stores = /*[[${stores}]]*/ [];
 
         function autocompleteStore(offerNum, deliveryNum) {
-            /*<![CDATA[*/
-            const stores = /*[[${stores}]]*/ [];
+
+
             var value = document.getElementById(`offer${offerNum}.deliveries${deliveryNum}.store`).value;
             let result = document.getElementById(`store${offerNum}delivery${deliveryNum}result`);
+            var zoneId = document.getElementById('zone').value;
+
+            var trimmedStores = [];
+
+            stores.forEach(store => {
+                if(zoneId.length == 0 || store.zone.uid == (zoneId)){
+                    trimmedStores.push(store.name);
+                }
+            });
+
+
             result.innerHTML = "";
             if (value.length > 0) {
-                let matches = stores.filter(item => item.name.toLowerCase().includes(value.toLowerCase()));
+                let matches = trimmedStores.filter(item => item.toLowerCase().includes(value.toLowerCase()));
                 if(matches.length === 0){
                     let div = document.createElement("div");
                     div.innerHTML = "No matches found";
@@ -30,7 +43,7 @@
                 } else
                 matches.forEach(match => {
                     let div = document.createElement("div");
-                    div.innerHTML = `<a href="#" onclick="finalizeAutocompleteStore(${offerNum},${deliveryNum},'${match.name}')" >` + match.name + `</a>`;
+                    div.innerHTML = `<a href="#" onclick="finalizeAutocompleteStore(${offerNum},${deliveryNum},'${match}')" >` + match + `</a>`;
                     result.appendChild(div);
                 });
             }
@@ -83,23 +96,89 @@
                 additionalField.innerHTML = '';
             }
         }
+
+        function autoCompleteState() {
+            var states = [];
+            stores.forEach(store => {
+                if (!states.includes(store.zone.state)) {
+                    states.push(store.zone.state);
+                }
+            });
+            var value = document.getElementById('state').value;
+            let result = document.getElementById('zoneStateResult');
+            result.innerHTML = "";
+            if (value.length > 0) {
+                let matches = states.filter(item => item.toLowerCase().includes(value.toLowerCase()));
+                if(matches.length === 0){
+                    let div = document.createElement("div");
+                    div.innerHTML = "No matches found";
+                    result.appendChild(div);
+                } else
+                matches.forEach(match => {
+                    let div = document.createElement("div");
+                    div.innerHTML = `<a href="#" onclick="finalizeAutocompleteState('${match}')" >` + match + `</a>`;
+                    result.appendChild(div);
+                });
+            }
+        }
+
+        function autocompleteCity() {
+            var cities = [];
+            stores.forEach(store => {
+                if (!cities.includes(store.zone.city)) {
+                    //                    cities.push(store.zone.city, store.zone.uid);
+                    cities[store.zone.city] = store.zone.uid;
+                }
+            });
+            var value = document.getElementById('city').value;
+            let result = document.getElementById('zoneCityResult');
+            result.innerHTML = "";
+            if (value.length > 0) {
+
+                for (var key in cities) {
+                    if (key.toLowerCase().includes(value.toLowerCase())) {
+                        let div = document.createElement("div");
+                        div.innerHTML = `<a href="#" onclick="finalizeAutocompleteCity('${cities[key]}', '${key}')" >` + key + `</a>`;
+                        result.appendChild(div);
+                    }
+                }
+            }
+        }
+
+        function finalizeAutocompleteCity(uid, value) {
+            document.getElementById('city').value = value;
+            document.getElementById('zoneCityResult').innerHTML = "";
+            document.getElementById('zone').value = uid;
+        }
+
+        function finalizeAutocompleteState(value) {
+            document.getElementById('state').value = value;
+            document.getElementById('zoneStateResult').innerHTML = "";
+        }
     </script>
     <link th:href="@{/style.css}" rel="stylesheet">
 </head>
 <body>
 <form th:action="@{/form/save-dash}" th:object="${form}" method="post">
     <label for="start">Start Time:</label>
-    <input type="datetime-local" id="start" th:field="*{startTime}" /><br/>
+    <input type="datetime-local" id="start" th:field="*{startTime}"/><br/>
     <label for="end">End Time:</label>
-    <input type="datetime-local" id="end" th:field="*{endTime}" /><br/>
+    <input type="datetime-local" id="end" th:field="*{endTime}"/><br/>
     <label for="active">Active Time (Minutes):</label>
-    <input type="number" id="active" th:field="*{activeTime}" /><br/>
+    <input type="number" id="active" th:field="*{activeTime}"/><br/>
 
     <label for="zone">Zone:</label>
-    <input type="number" id="zone" name="zone"/><br/>
+    <input type="text" id="zone" name="zone"/><br/>
+    <div id="zoneIdResult"></div>
+    <label for="city">Zone City:</label>
+    <input type="text" id="city" name="city" oninput="autocompleteCity()"/><br/>
+    <div id="zoneCityResult"></div>
+    <label for="state">Zone State:</label>
+    <input type="text" id="state" name="state" oninput="autocompleteState()"/><br/>
+    <div id="zoneStateResult"></div>
 
     <label for="miles">Miles:</label>
-    <input type="number" id="miles" th:field="*{miles}" /><br/>
+    <input type="number" id="miles" th:field="*{miles}"/><br/>
 
     <label for="offers">Offers:</label>
     <input type="number" id="offers" th:field="*{offers}" oninput="updateOfferForm()"/><br/>

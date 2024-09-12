@@ -1,31 +1,35 @@
 package me.ddreports.data;
 
-import json2.JSONObject;
-
-import java.util.Collection;
+import java.util.UUID;
 
 public class Zone {
 
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public void setState(State state) {
-        this.state = state;
-    }
-
+    private final UUID uid;
     private String city;
     private State state;
 
+    public Zone() {
+        uid = UUID.randomUUID();
+    }
 
-
+    public UUID getUid() {
+        return uid;
+    }
 
     public String getCity() {
         return city;
     }
 
+    public void setCity(String city) {
+        this.city = city;
+    }
+
     public State getState() {
         return state;
+    }
+
+    public void setState(State state) {
+        this.state = state;
     }
 
     public String getName() {
